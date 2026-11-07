@@ -1,0 +1,56 @@
+stages:
+  - test
+  - build
+
+test:static-scanner:
+  stage: test
+  image: python:3.12-slim@sha256:4840d514c583a4d3d8cad3940e68dee6f0f6f3635c12fcd0a3d74c21a5b93a54
+  script:
+    - python -m unittest discover -s defensive-tools/static-scanner/tests -v
+    - python -m compileall -q defensive-tools/static-scanner
+
+test:guard-core:
+  stage: test
+  image: eclipse-temurin:17@sha256:43338b737d0f75d6883d3c4563bc66974113ca8ac296e82f39d161fb3d398f0d
+  script:
+    - mkdir -p /tmp/ghostmap-guard-test
+    - javac -d /tmp/ghostmap-guard-test defensive-tools/apk-guard/guard-core/src/main/java/dev/ghostmap/safelab/ZipSafetyGuard.java defensive-tools/apk-guard/tests/java/dev/ghostmap/safelab/ZipSafetyGuardSelfTest.java
+    - java -cp /tmp/ghostmap-guard-test dev.ghostmap.safelab.ZipSafetyGuardSelfTest
+    - javac -d /tmp/ghostmap-guard-test defensive-tools/apk-guard/scanner/src/main/java/dev/ghostmap/scanner/LatestScanGate.java defensive-tools/apk-guard/tests/java/dev/ghostmap/scanner/LatestScanGateSelfTest.java
+    - java -cp /tmp/ghostmap-guard-test dev.ghostmap.scanner.LatestScanGateSelfTest
+    - javac -d /tmp/ghostmap-guard-test defensive-tools/apk-guard/scanner/src/main/java/dev/ghostmap/scanner/PrivateFileCleanup.java defensive-tools/apk-guard/tests/java/dev/ghostmap/scanner/PrivateFileCleanupSelfTest.java
+    - java -cp /tmp/ghostmap-guard-test dev.ghostmap.scanner.PrivateFileCleanupSelfTest
+    - javac -d /tmp/ghostmap-guard-test defensive-tools/apk-guard/scanner/src/main/java/dev/ghostmap/scanner/CleanupPublishGate.java defensive-tools/apk-guard/tests/java/dev/ghostmap/scanner/CleanupPublishGateSelfTest.java
+    - java -cp /tmp/ghostmap-guard-test dev.ghostmap.scanner.CleanupPublishGateSelfTest
+
+build:apk-guard:
+  stage: build
+  image: ghcr.io/cirruslabs/android-sdk:35@sha256:c724009e305b4607157287624033ab97f319af44c244bfc9f73b6293f3bb01b9
+  variables:
+    GRADLE_VERSION: "8.9"
+  script:
+    - mkdir -p /tmp/ghostmap-gradle
+    - curl --fail --location --retry 3 --silent --show-error "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" -o /tmp/ghostmap-gradle/gradle.zip
+    - echo "d725d707bfabd4dfdc958c624003b3c80accc03f7037b5122c4b1d0ef15cecab  /tmp/ghostmap-gradle/gradle.zip" | sha256sum -c -
+    - unzip -q /tmp/ghostmap-gradle/gradle.zip -d /tmp/ghostmap-gradle
+    - /tmp/ghostmap-gradle/gradle-${GRADLE_VERSION}/bin/gradle --no-daemon -p defensive-tools/apk-guard :scanner:assembleDebug
+    - APK=defensive-tools/apk-guard/scanner/build/outputs/apk/debug/scanner-debug.apk
+    - APK_SIGNER=$(command -v apksigner || find "$ANDROID_HOME/build-tools" -maxdepth 2 -name apksigner -type f | sort -V | tail -1)
+    - AAPT=$(command -v aapt || find "$ANDROID_HOME/build-tools" -maxdepth 2 -name aapt -type f | sort -V | tail -1)
+    - test -x "$APK_SIGNER" && test -x "$AAPT"
+    - |
+      "$APK_SIGNER" verify --verbose "$APK" | tee apk-guard-signature.txt
+    - |
+      grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' apk-guard-signature.txt
+    - |
+      "$AAPT" dump permissions "$APK" | tee apk-guard-permissions.txt
+    - if grep -q 'uses-permission' apk-guard-permissions.txt; then exit 1; fi
+    - sha256sum "$APK" | tee apk-guard-sha256.txt
+  artifacts:
+    when: on_success
+    expire_in: 30 days
+    paths:
+      - defensive-tools/apk-guard/scanner/build/outputs/apk/debug/scanner-debug.apk
+      - apk-guard-sha256.txt
+      - apk-guard-signature.txt
+      - apk-guard-permissions.txt

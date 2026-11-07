@@ -1,0 +1,6 @@
+# Redacted emulator observations; file/resource names and memory addresses omitted.
+11-07 11:40:41.036 system_server pid=689 SIGBUS/BUS_ADRERR
+11-07 11:40:53.503 system_server pid=2036 SIGBUS/BUS_ADRERR
+11-07 11:41:02.068 system_server pid=3026 SIGBUS/BUS_ADRERR
+11-07 11:41:18.000 system_server pid=4845 SIGBUS/BUS_ADRERR
+11-07 11:41:33.647 system_server pid=6555 SIGBUS/BUS_ADRERR

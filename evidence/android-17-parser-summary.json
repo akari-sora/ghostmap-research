@@ -1,0 +1,12 @@
+{
+  "api_level": 37,
+  "android_version": 17,
+  "device_type": "Android emulator",
+  "build_fingerprint": "google/sdk_gphone64_arm64/emu64a:17/CE2A.260420.051.A3/16571990:userdebug/dev-keys",
+  "native_parser_result": "NATIVE_SIGBUS_CONFIRMED",
+  "isolated_parser_process": true,
+  "app_preflight_result": "MITIGATION_CONFIRMED",
+  "app_preflight_scope": "Fixed research ZIP corpus; not the boot-loop APK",
+  "source_report_sha256": "f606a5190b2bd31e4b74831f0701b9ec11bd4caf9dd17f01f2b42aed7f4f5e49",
+  "source_mitigation_report_sha256": "313c6618da0e095392d0f7fcbbf206028899e90787d6e84bda70ef3bdca793d0"
+}

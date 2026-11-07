@@ -1,0 +1,9 @@
+.gradle/
+**/build/
+__pycache__/
+*.py[cod]
+*.apk
+*.aab
+*.jks
+*.keystore
+local.properties

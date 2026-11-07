@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:10,000
+GhostMap: independent Android emulator reproduction and defensive research.
+
+2
+00:00:10,000 --> 00:00:25,000
+This Android 16 emulator is responsive before the recorded failure.
+
+3
+00:00:25,000 --> 00:00:50,000
+Real capture: the system service crashes repeatedly; this is not a hardware reboot.
+
+4
+00:00:50,000 --> 00:01:00,000
+Android 16 logs show repeated system_server SIGBUS events with changing PIDs.
+
+5
+00:01:00,000 --> 00:01:10,000
+Android 17 headless logs show the same class of repeated native failures.
+
+6
+00:01:10,000 --> 00:01:20,000
+APK Guard's real Android 15 scan UI reports PASS, BLOCKED, or INCONCLUSIVE.
+
+7
+00:01:20,000 --> 00:01:30,000
+Research and defensive tools: gitlab.com/aa22396584/ghostmap-research. Original discovery: Bitdefender Labs.

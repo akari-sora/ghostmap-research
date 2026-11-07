@@ -1,0 +1,17 @@
+{
+  "api_level": 36,
+  "android_version": 16,
+  "device_type": "Non-root Google Play user-build emulator",
+  "build_fingerprint": "google/sdk_gphone64_x86_64/emu64xa:16/BP22.250325.006/13344233:user/release-keys",
+  "observation": "Repeated system_server SIGBUS/BUS_ADRERR with changing PIDs during boot",
+  "sample_system_server_pids": [
+    689,
+    2036,
+    3026,
+    4845,
+    6555
+  ],
+  "source_log_sha256": "f202dff4654dbfcc962e57c1f318f37ba09a2758dad452e0e8463adc0a2eefe0",
+  "redaction": "Addresses, file paths, resource names, and full call chains omitted",
+  "caller_attribution": "Inferred from timing and service diagnostics; not a Java frame in tombstone"
+}
