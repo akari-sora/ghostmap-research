@@ -4,6 +4,8 @@
 
 [繁體中文](README.zh-TW.md) · [Technical analysis](docs/technical-analysis.md) · [Results](docs/test-results.md) · [APK Guard](defensive-tools/apk-guard/README.md)
 
+Canonical repository, CI and issues: <https://gitlab.com/aa22396584/ghostmap-research>. The GitHub copy is a read-only mirror.
+
 **GhostMap was discovered and publicly disclosed by [Bitdefender Labs on 5 November 2026](https://www.bitdefender.com/en-us/blog/labs/ghostmap-android).** This project documents an independent, emulator-only reproduction and publishes defensive tools. It is not the original discovery and does not claim that Android has been fixed.
 
 An inconsistency in ZIP metadata can lead an Android native resource parser to read beyond a file-backed mapping. The observed result is `SIGBUS/BUS_ADRERR`. Which process crashes depends on when a resource is read. The repeated system-service failures below are **`system_server` process restarts on emulators**, not kernel crashes or repeated hardware power cycles.
@@ -22,6 +24,8 @@ These are separate experiments. The APK Guard phone interface was tested on Andr
 
 The video uses real Android 16 emulator footage and cropped screenshots from the real APK Guard UI. Android 17 evidence is represented by redacted observations from its headless emulator run, not invented footage. The original capture remains in the private laboratory.
 
+[33-second vertical cut, 繁體中文 step captions](media/bootloop-reel-zh.mp4) · [English step captions](media/bootloop-reel-en.mp4) — the first 32 seconds of the same Android 16 capture, prepared for 9:16 short-video posts. See [media provenance](media/README.md) for what the cut does and does not show.
+
 ## Defensive tools
 
 - [APK Guard](defensive-tools/apk-guard/README.md) is an offline, permission-free Android preflight scanner. It offers **PASS**, **BLOCKED**, and **INCONCLUSIVE**. It reads ZIP metadata before invoking any Android APK/resource parser and does not install APKs. The [actual PASS](media/screenshots/apk-guard-normal.png), [BLOCKED](media/screenshots/apk-guard-blocked.png), and [INCONCLUSIVE](media/screenshots/apk-guard-cleanup-fail-closed.png) screens were captured on an Android 15 emulator; file identifiers were cropped out.
@@ -37,6 +41,6 @@ The [AOSP mitigation proposal](patches/aosp-proposals.md) is **not** an accepted
 
 ## Build and citation
 
-The repository CI runs scanner tests, dependency-free Java guard tests, and an Android debug build. See each tool's README for local instructions. If a build artifact is available, its SHA-256 and exact CI job are listed there; no artifact is implied by this text alone.
+The repository CI runs scanner tests, dependency-free Java guard tests, and an Android debug build; all three jobs pass on `main`. See each tool's README for local instructions. The [APK Guard README](defensive-tools/apk-guard/README.md) lists the exact CI job and SHA-256 of the latest debug build artifact; no other artifact is implied.
 
 When citing the vulnerability, cite [Bitdefender Labs](https://www.bitdefender.com/en-us/blog/labs/ghostmap-android) for discovery and this repository for the independent emulator observations. See the [disclosure timeline](docs/disclosure-timeline.md), [security policy](SECURITY.md), and [license](LICENSE).

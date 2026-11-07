@@ -94,6 +94,35 @@ class ScannerTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "ZIP64"):
                     scanner.audit(path)
 
+    def test_zip64_local_placeholder_is_not_reported_clean(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "placeholder.zip"
+            with zipfile.ZipFile(path, "w") as archive:
+                archive.writestr("one.txt", "ordinary content")
+            data = bytearray(path.read_bytes())
+            self.assertEqual(data[:4], b"PK\x03\x04")
+            struct.pack_into("<II", data, 18, 0xFFFFFFFF, 0xFFFFFFFF)
+            path.write_bytes(data)
+
+            result = scanner.audit(path)
+            self.assertEqual(result["status"], "review_required")
+            self.assertIn("LOCAL_ZIP64_PLACEHOLDER", result["findings"][0]["issues"])
+
+    def test_local_central_size_mismatch_is_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "size-mismatch.zip"
+            with zipfile.ZipFile(path, "w") as archive:
+                archive.writestr("one.txt", "ordinary content")
+            data = bytearray(path.read_bytes())
+            self.assertEqual(data[:4], b"PK\x03\x04")
+            (compressed,) = struct.unpack_from("<I", data, 18)
+            struct.pack_into("<I", data, 18, compressed + 1)
+            path.write_bytes(data)
+
+            result = scanner.audit(path)
+            self.assertEqual(result["status"], "review_required")
+            self.assertIn("LOCAL_CENTRAL_SIZE_MISMATCH", result["findings"][0]["issues"])
+
     def test_benign_zip_has_no_findings(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "benign.zip"

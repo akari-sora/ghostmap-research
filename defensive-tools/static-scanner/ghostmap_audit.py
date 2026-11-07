@@ -188,12 +188,21 @@ def audit(path: Path, max_entries: int = DEFAULT_MAX_ENTRIES) -> dict:
                     issues.append('LOCAL_CENTRAL_FLAGS_MISMATCH')
                 if local['filename'] != central_name:
                     issues.append('LOCAL_CENTRAL_NAME_MISMATCH')
-                # Data-descriptor archives may omit local size values.
-                if not (info.flag_bits & 0x8) and (
-                    local['compressed_length'] not in (0xFFFFFFFF, info.compress_size)
-                    or local['uncompressed_length'] not in (0xFFFFFFFF, info.file_size)
-                ):
-                    issues.append('LOCAL_CENTRAL_SIZE_MISMATCH')
+                # A data-descriptor entry (bit 3) may carry zero placeholders in
+                # its local header. ZIP64 placeholders are a contradiction here
+                # because _preflight_directory already rejected ZIP64 end
+                # records, so they are reported rather than treated as unknown.
+                descriptor = bool(info.flag_bits & 0x8)
+                for local_value, central_value in (
+                        (local['compressed_length'], info.compress_size),
+                        (local['uncompressed_length'], info.file_size)):
+                    if local_value == 0xFFFFFFFF:
+                        issues.append('LOCAL_ZIP64_PLACEHOLDER')
+                        break
+                    if local_value != central_value and not (
+                            descriptor and local_value == 0):
+                        issues.append('LOCAL_CENTRAL_SIZE_MISMATCH')
+                        break
             except ValueError as exc:
                 issues.append('LOCAL_HEADER_INVALID: ' + str(exc))
 

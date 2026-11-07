@@ -10,4 +10,4 @@ Exit code `0` means no covered structural anomaly was reported, `1` means review
 
 The public test suite uses ordinary benign ZIPs and malformed non-APK data. It contains no boot-loop APK or payload generator.
 
-Before constructing Python's `ZipFile`, the scanner checks the end record, entry count, central record ranges, and a 64 MiB central-directory size cap. It compares raw local and central file names as well as the other covered fields. ZIP64, multi-disk archives, and directories above that cap fail closed as unreadable/inconclusive for this tool; they do not receive a clean result.
+Before constructing Python's `ZipFile`, the scanner checks the end record, entry count, central record ranges, and a 64 MiB central-directory size cap. It compares raw local and central file names as well as the other covered fields. ZIP64, multi-disk archives, and directories above that cap fail closed as unreadable/inconclusive for this tool; they do not receive a clean result. A ZIP64 size placeholder left in a local header, or a local size that contradicts the central directory, is reported as a finding.

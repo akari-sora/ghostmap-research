@@ -254,6 +254,7 @@ public final class ScannerActivity extends Activity {
         setContentView(scroll);
     }
 
+    @SuppressWarnings("deprecation")
     private static Uri incomingUri(Intent intent) {
         if (intent == null) {
             return null;
@@ -262,10 +263,17 @@ public final class ScannerActivity extends Activity {
             return intent.getData();
         }
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            @SuppressWarnings("deprecation")
-            Uri stream = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            if (stream != null) {
-                return stream;
+            // The activity is exported, so EXTRA_STREAM comes from an arbitrary
+            // sender. Read it as a plain Parcelable and type-check it instead of
+            // letting a malformed or non-Uri extra throw on the main thread.
+            Object stream;
+            try {
+                stream = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+            } catch (RuntimeException malformed) {
+                stream = null;
+            }
+            if (stream instanceof Uri) {
+                return (Uri) stream;
             }
             ClipData clip = intent.getClipData();
             if (clip != null && clip.getItemCount() > 0) {

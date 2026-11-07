@@ -4,6 +4,8 @@
 
 [English](README.md) · [技術分析](docs/technical-analysis.md) · [測試結果](docs/test-results.md) · [APK Guard](defensive-tools/apk-guard/README.md)
 
+正式 Repo、CI 與 Issue：<https://gitlab.com/aa22396584/ghostmap-research>；GitHub 上的是唯讀鏡像。
+
 **GhostMap 由 [Bitdefender Labs 於 2026 年 11 月 5 日首次公開](https://www.bitdefender.com/en-us/blog/labs/ghostmap-android)。** 本專案提供獨立的模擬器重現及防護工具；不主張原始發現權，也不宣稱 Android 已修復。
 
 不一致的 ZIP metadata 可能使 Android 原生資源解析器讀取超出實際檔案映射的記憶體，造成 `SIGBUS/BUS_ADRERR`。以下持續性故障是**模擬器中的 `system_server` 程序反覆重啟**，不是核心崩潰或硬體反覆斷電。
@@ -22,6 +24,8 @@
 
 影片使用真實 Android 16 模擬器畫面及 APK Guard 真實介面裁切截圖；Android 17 是 headless 測試，以去敏摘要呈現，沒有假造錄影。原始影片留在私人實驗室。
 
+[33 秒直式剪輯（繁體中文步驟字幕）](media/bootloop-reel-zh.mp4) · [英文步驟字幕版](media/bootloop-reel-en.mp4)：同一段 Android 16 錄影的前 32 秒，供 9:16 短影音發文使用。剪輯呈現與未呈現的內容見[媒體來源說明](media/README.md)。
+
 ## 防護工具
 
 - [APK Guard](defensive-tools/apk-guard/README.md)：完全離線、無額外權限的 Android APK 前置掃描器，顯示 **PASS／BLOCKED／INCONCLUSIVE**。掃描 ZIP metadata，不安裝 APK。[真實 PASS](media/screenshots/apk-guard-normal.png)、[BLOCKED](media/screenshots/apk-guard-blocked.png) 及 [INCONCLUSIVE](media/screenshots/apk-guard-cleanup-fail-closed.png) 介面擷取自 Android 15 模擬器，已裁去檔名與雜湊。
@@ -35,4 +39,4 @@
 
 [AOSP 防護提案](patches/aosp-proposals.md)**不是**已發布的安全更新；尚無完整 AOSP 系統映像編譯、`atest` 或修補後裝置重測紀錄。[防護範圍](docs/mitigation.md)。
 
-本專案 CI 預定執行 Python、Java Guard 測試及 Android debug build；實際 CI 與產物狀態以 GitLab 頁面為準。引用漏洞發現時請引用 [Bitdefender Labs](https://www.bitdefender.com/en-us/blog/labs/ghostmap-android)，引用獨立模擬器結果時可引用本 Repo。另見[揭露時間線](docs/disclosure-timeline.md)、[安全政策](SECURITY.md)與[授權](LICENSE)。
+本專案 CI 會執行 Python 掃描器測試、無相依的 Java Guard 自測與 Android debug build，`main` 上三個 job 皆通過；最新 debug build 的 CI job 與 SHA-256 列在 [APK Guard README](defensive-tools/apk-guard/README.md)。引用漏洞發現時請引用 [Bitdefender Labs](https://www.bitdefender.com/en-us/blog/labs/ghostmap-android)，引用獨立模擬器結果時可引用本 Repo。另見[揭露時間線](docs/disclosure-timeline.md)、[安全政策](SECURITY.md)與[授權](LICENSE)。
